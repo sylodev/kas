@@ -5,12 +5,10 @@ export interface MemoryCacheValue<Type> {
   expiresAt?: number;
 }
 
-type MemoryCacheStore<Type> = Map<string, MemoryCacheValue<Type>> | Set<MemoryCacheValue<Type>>;
-
 export abstract class MemoryCache<Type> extends Cache {
   private static readonly CACHE_SAMPLES = 20;
   private static readonly CACHE_RECHECK_COUNT = (100 * MemoryCache.CACHE_SAMPLES) / 25;
-  protected abstract readonly store: MemoryCacheStore<Type>;
+  protected abstract readonly store: Map<string, MemoryCacheValue<Type>> | Set<MemoryCacheValue<Type>>;
 
   constructor(defaultExpiry?: string) {
     super(undefined, defaultExpiry);

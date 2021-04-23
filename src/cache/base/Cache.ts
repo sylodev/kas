@@ -14,9 +14,10 @@ export abstract class Cache {
     return `${this.namespace}:${key}`;
   }
 
-  protected getExpiryMs(override?: string): number | undefined {
-    if (!override) return this.defaultExpiry;
-    return parseTime(override);
+  protected getExpiryDate(override?: string): number | undefined {
+    const expireMs = override ? parseTime(override) : this.defaultExpiry;
+    if (!expireMs) return;
+    return Date.now() + expireMs;
   }
 
   abstract clear(): Promise<void>;

@@ -1,8 +1,8 @@
 import { MapCache } from "../types/MapCache";
-import { MemoryCache } from "./base/MemoryCache";
+import { MemoryCache, MemoryCacheValue } from "./base/MemoryCache";
 
 export class MemoryMapCache<Type> extends MemoryCache<Type> implements MapCache<Type> {
-  protected readonly store = new Map();
+  protected readonly store = new Map<string, MemoryCacheValue<Type>>();
 
   public async get(key: string): Promise<Type | undefined> {
     const data = this.store.get(key);
@@ -15,7 +15,7 @@ export class MemoryMapCache<Type> extends MemoryCache<Type> implements MapCache<
   }
 
   public async set(key: string, data: Type, ttl?: string): Promise<boolean> {
-    const expiresAt = this.getExpiryMs(ttl);
+    const expiresAt = this.getExpiryDate(ttl);
     this.store.set(key, { value: data, expiresAt });
     return true;
   }
