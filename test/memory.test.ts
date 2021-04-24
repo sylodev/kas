@@ -10,14 +10,14 @@ describe("Kas Memory Cache", () => {
     expect(await cache.get("test")).toBe(undefined);
   });
   test("Should delete cached data", async () => {
-    const cache = new MemoryMapCache();
+    const cache = new MemoryMapCache<string>();
     expect(await cache.set("test", "sweet")).toBeTruthy();
     expect(await cache.get("test")).toBe("sweet");
     expect(await cache.delete("test")).toBeTruthy();
     expect(await cache.get("test")).toBe(undefined);
   });
   test("Should clear all cached data", async () => {
-    const cache = new MemoryMapCache();
+    const cache = new MemoryMapCache<string>();
     expect(await cache.set("test", "sweet")).toBeTruthy();
     expect(await cache.get("test")).toBe("sweet");
     expect(await cache.clear()).toBe(undefined);
