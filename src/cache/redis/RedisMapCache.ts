@@ -1,22 +1,33 @@
-import { parseTime } from "../helpers";
-import { MapCache } from "../types/MapCache";
-import { RedisCache } from "./base/RedisCache";
+import { MapCache } from "../base/MapCache";
+import { RedisCache } from "./RedisCache";
 
 export class RedisMapCache<Type> extends RedisCache implements MapCache<Type> {
   public async get(key: string): Promise<Type | undefined> {
     const prefixedKey = this.getPrefixedKey(key);
-    const data = await this.redis.get(prefixedKey);
-    if (data === null) return;
-    return JSON.parse(data);
+    const stringified = await this.redis.get(prefixedKey);
+    if (stringified === null) return;
+    return JSON.parse(stringified);
   }
 
   public async set(key: string, data: Type, ttl?: string | "KEEPTTL"): Promise<boolean> {
     if (data == null) return false;
     const prefixedKey = this.getPrefixedKey(key);
-    const payload = JSON.stringify(data);
-    if (!ttl) await this.redis.set(prefixedKey, payload);
-    else if (ttl === "KEEPTTL") await this.redis.set(prefixedKey, payload, "KEEPTTL");
-    else await this.redis.set(prefixedKey, payload, "PX", parseTime(ttl));
+    const stringified = JSON.stringify(data);
+    switch (ttl) {
+      case undefined:
+        await this.redis.set(prefixedKey, stringified);
+        break;
+      case "KEEPTTL":
+        await this.redis.set(prefixedKey, stringified, "KEEPTTL");
+        break;
+      default: {
+        const expiresIn = this.getRelativeExpiry(ttl);
+        // PX = millisecond precision
+        // https://redis.io/commands/set
+        await this.redis.set(prefixedKey, stringified, "PX", expiresIn);
+        break;
+      }
+    }
 
     return true;
   }

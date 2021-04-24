@@ -1,4 +1,4 @@
-import { parseTime } from "../../helpers";
+import ms from "ms";
 
 export abstract class Cache {
   protected readonly namespace?: string;
@@ -6,7 +6,7 @@ export abstract class Cache {
 
   constructor(namespace?: string, defaultExpiry?: string) {
     this.namespace = namespace;
-    this.defaultExpiry = parseTime(defaultExpiry);
+    this.defaultExpiry = defaultExpiry ? ms(defaultExpiry) : undefined;
   }
 
   protected getPrefixedKey(key: string): string {
@@ -14,9 +14,13 @@ export abstract class Cache {
     return `${this.namespace}:${key}`;
   }
 
-  protected getExpiryDate(override?: string): number | undefined {
-    const expireMs = override ? parseTime(override) : this.defaultExpiry;
-    if (!expireMs) return;
-    return Date.now() + expireMs;
+  protected getRelativeExpiry(value?: string): number | undefined {
+    if (value !== undefined) {
+      const parsed = ms(value);
+      if (parsed === undefined) throw new Error(`Cannot parse "${value}" as a duration.`);
+      return parsed;
+    }
+
+    return this.defaultExpiry;
   }
 }

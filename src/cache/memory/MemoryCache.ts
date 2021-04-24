@@ -1,4 +1,4 @@
-import { Cache } from "./Cache";
+import { Cache } from "../base/Cache";
 
 export interface MemoryCacheValue<Type> {
   value: Type;
@@ -13,6 +13,10 @@ export abstract class MemoryCache<Type> extends Cache {
   constructor(defaultExpiry?: string) {
     super(undefined, defaultExpiry);
     setInterval(this.checkForExpiredKeys.bind(this), 100);
+  }
+
+  public async clear(): Promise<void> {
+    return this.store.clear();
   }
 
   // implements basically the same algorithm redis uses https://redis.io/commands/expire#how-redis-expires-keys

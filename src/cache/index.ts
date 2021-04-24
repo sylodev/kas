@@ -1,2 +1,2 @@
-export * from "./MemoryMapCache";
-export * from "./RedisMapCache";
+export * from "./memory/MemoryMapCache";
+export * from "./redis/RedisMapCache";
