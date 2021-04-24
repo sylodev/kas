@@ -1,4 +1,4 @@
-import { parseTime } from "src/helpers";
+import { parseTime } from "../../helpers";
 
 export abstract class Cache {
   protected readonly namespace?: string;
@@ -19,6 +19,4 @@ export abstract class Cache {
     if (!expireMs) return;
     return Date.now() + expireMs;
   }
-
-  abstract clear(): Promise<void>;
 }

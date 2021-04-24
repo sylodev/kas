@@ -1,5 +1,5 @@
-import { MapCache } from "src/types/MapCache";
 import { parseTime } from "../helpers";
+import { MapCache } from "../types/MapCache";
 import { RedisCache } from "./base/RedisCache";
 
 export class RedisMapCache<Type> extends RedisCache implements MapCache<Type> {

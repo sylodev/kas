@@ -3,4 +3,5 @@ export abstract class MapCache<Type> {
   abstract set(key: string, data: Type, ttl?: string): Promise<boolean>;
   abstract has(key: string): Promise<boolean>;
   abstract delete(key: string): Promise<boolean>;
+  abstract clear(): Promise<void>;
 }

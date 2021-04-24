@@ -1,6 +1,6 @@
-import { Cache } from "./Cache";
 import { Redis, RedisOptions } from "ioredis";
 import { resolveRedisInstance } from "../../helpers";
+import { Cache } from "./Cache";
 
 export interface RedisCacheOptions extends RedisOptions {
   namespace?: string;
