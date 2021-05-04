@@ -22,7 +22,14 @@ export class MemoryMapCache<Type> extends MemoryCache<Type> implements MapCache<
   }
 
   public async has(key: string): Promise<boolean> {
-    return this.store.has(key);
+    const data = this.store.get(key);
+    if (data === undefined) return false;
+    if (data.expiresAt && Date.now() >= data.expiresAt) {
+      this.store.delete(key);
+      return false;
+    }
+
+    return true;
   }
 
   public async delete(key: string): Promise<boolean> {
