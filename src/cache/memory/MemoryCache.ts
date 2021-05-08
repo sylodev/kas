@@ -1,5 +1,9 @@
-import { MemoryCacheValue } from "src/types";
 import { Cache } from "../base/Cache";
+
+export interface MemoryCacheValue<Type> {
+  value: Type;
+  expiresAt?: number;
+}
 
 export type MemoryCacheStore<Type> = Map<string, MemoryCacheValue<Type>> | Set<MemoryCacheValue<Type>>;
 
