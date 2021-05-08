@@ -1,4 +1,2 @@
-export * from "./memory/MemoryMapCache";
-
-export { SetOption } from "./redis/RedisCache";
-export * from "./redis/RedisMapCache";
+export * from "./memory";
+export * from "./redis";

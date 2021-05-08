@@ -14,13 +14,13 @@ export class RedisMapCache<Type> extends RedisCache implements MapCache<Type> {
     const prefixedKey = this.getPrefixedKey(key);
     const stringified = JSON.stringify(data);
     const params: [string, string, ...any] = [prefixedKey, stringified];
-    if (mode) params.push(mode);
     const expiresIn = this.getRelativeExpiry(ttl);
     if (expiresIn !== undefined) {
       // PX = millisecond precision
       // https://redis.io/commands/set
       params.push("PX", expiresIn);
     }
+    if (mode) params.push(mode);
 
     await this.redis.set(...params);
     return true;

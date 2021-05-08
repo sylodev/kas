@@ -1,4 +1,4 @@
-import { RedisMapCache } from "../src";
+import { RedisMapCache, SetOption } from "../src";
 import { sleep } from "../src/helpers/sleep";
 import Redis from "ioredis-mock";
 
@@ -23,7 +23,7 @@ describe("Kas Redis Cache", () => {
   });
   test("Should clear all cached data", async () => {
     const cache = new RedisMapCache<string>(client);
-    expect(await cache.set("test", "sweet")).toBeTruthy();
+    expect(await cache.set("test", "sweet", undefined, SetOption.KEEP_TTL)).toBeTruthy();
     expect(await cache.get("test")).toBe("sweet");
     expect(await cache.clear()).toBeUndefined();
     expect(await cache.get("test")).toBeUndefined();
