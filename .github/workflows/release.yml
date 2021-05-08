@@ -16,6 +16,6 @@ jobs:
       - name: Install Dependencies
         run: npm install
       - name: Publish to NPM Registry
-        run: npm publish
+        run: npm publish --access=public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
