@@ -2,12 +2,6 @@ import { Redis, RedisOptions } from "ioredis";
 import { resolveRedisInstance } from "../../helpers/resolveRedisInstance";
 import { Cache } from "../base/Cache";
 
-export enum SetOption {
-  KEEP_TTL = "KEEPTTL",
-  ONLY_IF_UNSET = "NX",
-  ONLY_IF_SET = "XX",
-}
-
 export interface RedisCacheOptions extends RedisOptions {
   namespace?: string;
   defaultExpiry?: string;

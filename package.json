@@ -3,7 +3,8 @@
   "description": "Intuitive caching solution - with robust, built-in TypeScript types.",
   "version": "0.5.2",
   "repository": "github:sylo-digital/kas.git",
-  "main": "./dist/index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "private": false,
   "license": "MIT",
   "files": [

@@ -1,5 +1,6 @@
+import { SetOption } from "src/types";
 import { MapCache } from "../base/MapCache";
-import { RedisCache, SetOption } from "./RedisCache";
+import { RedisCache } from "./RedisCache";
 
 export class RedisMapCache<Type> extends RedisCache implements MapCache<Type> {
   public async get(key: string): Promise<Type | undefined> {

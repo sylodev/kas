@@ -1,5 +1,7 @@
 # sylo-digital/kas
 
+> Intuitive caching solution - with robust, built-in TypeScript types and redis support.
+
 ## features
 
 - string-based ttls
