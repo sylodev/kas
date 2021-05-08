@@ -9,6 +9,8 @@
     "typeRoots": ["node_modules/@types", "types"],
     "esModuleInterop": true,
     "noUnusedLocals": true,
+    "declaration": true,
+    "sourceMap": true,
     "noUnusedParameters": true
   }
 }
