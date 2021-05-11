@@ -4,7 +4,7 @@ import { Cache } from "../base/Cache";
 
 export interface RedisCacheOptions extends RedisOptions {
   namespace?: string;
-  defaultExpiry?: string;
+  defaultExpiry?: string | number;
 }
 
 export abstract class RedisCache extends Cache {

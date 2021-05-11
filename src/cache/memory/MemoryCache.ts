@@ -12,7 +12,7 @@ export abstract class MemoryCache<Type> extends Cache {
   private static readonly CACHE_RECHECK_COUNT = (100 * MemoryCache.CACHE_SAMPLES) / 25;
   protected abstract readonly store: MemoryCacheStore<Type>;
 
-  constructor(defaultExpiry?: string) {
+  constructor(defaultExpiry?: string | number) {
     super(undefined, defaultExpiry);
     setInterval(this.checkForExpiredKeys.bind(this), 100);
   }

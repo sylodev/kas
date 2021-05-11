@@ -4,7 +4,7 @@ export abstract class Cache {
   protected readonly namespace?: string;
   protected readonly defaultExpiry?: number;
 
-  constructor(namespace?: string, defaultExpiry?: string) {
+  constructor(namespace?: string, defaultExpiry?: string | number) {
     this.namespace = namespace;
     this.defaultExpiry = this.getRelativeExpiry(defaultExpiry);
   }
