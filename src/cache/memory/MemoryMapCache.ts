@@ -14,7 +14,7 @@ export class MemoryMapCache<Type> extends MemoryCache<Type> implements MapCache<
     return data?.value;
   }
 
-  public async set(key: string, data: Type, ttl?: string): Promise<boolean> {
+  public async set(key: string, data: Type, ttl?: string | number): Promise<boolean> {
     const expiresIn = this.getRelativeExpiry(ttl);
     const expiresAt = expiresIn !== undefined ? Date.now() + expiresIn : undefined;
     this.store.set(key, { value: data, expiresAt });

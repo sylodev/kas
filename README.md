@@ -4,10 +4,10 @@
 
 ## features
 
-- string-based ttls
 - redis support
 - namespace support
 - generic classes, providing sweet type safety
+- string-based ttls (although raw milliseconds is supported if you want that extra performance, along with an exported `Duration` enum with some pre-calculated durations)
 - implements a passive method and probabilistic algorithm ([similar to redis](https://redis.io/commands/expire#how-redis-expires-keys)) to automatically expire memory cache entries
 
 ## basic usage

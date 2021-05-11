@@ -10,7 +10,7 @@ export class RedisMapCache<Type> extends RedisCache implements MapCache<Type> {
     return JSON.parse(stringified);
   }
 
-  public async set(key: string, data: Type, ttl?: string, mode?: SetOption): Promise<boolean> {
+  public async set(key: string, data: Type, ttl?: string | number, mode?: SetOption): Promise<boolean> {
     if (data == null) return false;
     const prefixedKey = this.getPrefixedKey(key);
     const stringified = JSON.stringify(data);

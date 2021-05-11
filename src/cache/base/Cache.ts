@@ -6,7 +6,7 @@ export abstract class Cache {
 
   constructor(namespace?: string, defaultExpiry?: string) {
     this.namespace = namespace;
-    this.defaultExpiry = defaultExpiry ? ms(defaultExpiry) : undefined;
+    this.defaultExpiry = this.getRelativeExpiry(defaultExpiry);
   }
 
   protected getPrefixedKey(key: string): string {
@@ -14,7 +14,8 @@ export abstract class Cache {
     return `${this.namespace}:${key}`;
   }
 
-  protected getRelativeExpiry(value?: string): number | undefined {
+  protected getRelativeExpiry(value?: string | number): number | undefined {
+    if (typeof value === "number") return value;
     if (value !== undefined) {
       const parsed = ms(value);
       if (parsed === undefined) throw new Error(`Cannot parse "${value}" as a duration.`);
