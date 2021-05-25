@@ -1,6 +1,8 @@
 name: Build and Publish Package
-# todo: not a good idea
-on: [push]
+on:
+  push:
+    tags:
+      - "v*"
 
 jobs:
   publish:
