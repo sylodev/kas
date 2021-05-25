@@ -24,6 +24,7 @@ export class RedisMapCache<Type> extends RedisCache implements MapCache<Type> {
     if (mode) params.push(mode);
 
     await this.redis.set(...params);
+    if (this.enableClear) this.redis.sadd(this.namespace, key);
     return true;
   }
 
@@ -36,6 +37,7 @@ export class RedisMapCache<Type> extends RedisCache implements MapCache<Type> {
   public async delete(key: string): Promise<boolean> {
     const prefixedKey = this.getPrefixedKey(key);
     await this.redis.del(prefixedKey);
+    if (this.enableClear) this.redis.srem(this.namespace, key);
     return true;
   }
 }
