@@ -16,11 +16,12 @@ export abstract class RedisCache extends Cache {
   constructor(host: string | RedisOptions | Redis, namespace: string, options?: RedisCacheOptions) {
     super(undefined, options?.defaultExpiry);
     this.namespace = namespace;
+    this.enableClear = options?.enableExpensiveClear;
     this.redis = resolveRedisInstance(host, options);
   }
 
   public async clear(): Promise<void> {
-    if (!this.enableClear) return;
+    if (!this.enableClear) throw new Error("Enable expensive clear option to clear redis caches.");
     const keys = await this.redis.smembers(this.namespace);
     await this.redis.del(keys);
     return;
