@@ -8,7 +8,7 @@ export interface RedisCacheOptions extends RedisOptions {
 }
 
 export abstract class RedisCache extends Cache {
-  // required on redis caches to avoid collisions
+  // required to hopefully avoid collisions
   protected readonly namespace: string;
   protected readonly redis: Redis;
   protected readonly enableClear?: boolean;
@@ -22,8 +22,8 @@ export abstract class RedisCache extends Cache {
 
   public async clear(): Promise<void> {
     if (!this.enableClear) throw new Error("Enable expensive clear option to clear redis caches.");
-    const keys = await this.redis.smembers(this.namespace);
-    await this.redis.del(keys);
+    const members = await this.redis.smembers(this.namespace);
+    await this.redis.del(members.concat(this.namespace));
     return;
   }
 }

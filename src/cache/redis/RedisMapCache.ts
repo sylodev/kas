@@ -1,4 +1,4 @@
-import { SetOption } from "src/types";
+import { SetOption } from "../../types";
 import { MapCache } from "../base/MapCache";
 import { RedisCache } from "./RedisCache";
 
@@ -21,10 +21,10 @@ export class RedisMapCache<Type> extends RedisCache implements MapCache<Type> {
       // https://redis.io/commands/set
       params.push("PX", expiresIn);
     }
-    if (mode) params.push(mode);
 
+    if (mode) params.push(mode);
+    if (this.enableClear) await this.redis.sadd(this.namespace, prefixedKey);
     await this.redis.set(...params);
-    if (this.enableClear) this.redis.sadd(this.namespace, key);
     return true;
   }
 
@@ -36,8 +36,8 @@ export class RedisMapCache<Type> extends RedisCache implements MapCache<Type> {
 
   public async delete(key: string): Promise<boolean> {
     const prefixedKey = this.getPrefixedKey(key);
+    if (this.enableClear) await this.redis.srem(this.namespace, prefixedKey);
     await this.redis.del(prefixedKey);
-    if (this.enableClear) this.redis.srem(this.namespace, key);
     return true;
   }
 }

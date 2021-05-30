@@ -1,6 +1,6 @@
-import { RedisMapCache, SetOption } from "../src";
-import { sleep } from "../src/helpers/sleep";
 import Redis from "ioredis-mock";
+import { RedisMapCache } from "../src";
+import { sleep } from "../src/helpers/sleep";
 
 jest.setMock("ioredis", () => require("ioredis-mock"));
 const client = new Redis();
@@ -22,8 +22,8 @@ describe("Kas Redis Cache", () => {
     expect(await cache.get("test")).toBeUndefined();
   });
   test("Should clear all cached data", async () => {
-    const cache = new RedisMapCache<string>(client, "fortnite");
-    expect(await cache.set("test", "sweet", undefined, SetOption.KEEP_TTL)).toBeTruthy();
+    const cache = new RedisMapCache<string>(client, "fortnite", { enableExpensiveClear: true });
+    expect(await cache.set("test", "sweet")).toBeTruthy();
     expect(await cache.get("test")).toBe("sweet");
     expect(await cache.clear()).toBeUndefined();
     expect(await cache.get("test")).toBeUndefined();
