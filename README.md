@@ -4,7 +4,7 @@
 
 ## features
 
-- redis support
+- redis (sets) support
 - namespace support
 - generic classes, providing sweet type safety
 - string-based ttls (although raw milliseconds is supported if you want that extra performance, along with an exported `Duration` enum with some pre-calculated durations)
@@ -38,9 +38,9 @@ import { RedisMapCache } from "@sylo-digital/kas";
 import { connectionOptions } from "./constants";
 
 const redis = new Redis(connectionOptions);
-const cache = new RedisMapCache<string>(redis, { defaultExpiry: "5s" });
+const cache = new RedisMapCache<string>(redis, "namespace" { defaultExpiry: "5s" });
 // or
-const cache = new RedisMapCache<string>(connectionOptions, { defaultExpiry: "5s" });
+const cache = new RedisMapCache<string>(connectionOptions, "namespace", { defaultExpiry: "5s" });
 
 [ ... ]
 ```
