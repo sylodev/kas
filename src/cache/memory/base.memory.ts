@@ -1,4 +1,4 @@
-import { Cache } from "../base/Cache";
+import { Cache, Expiry } from "../cache";
 
 export interface MemoryCacheValue<Type> {
   value: Type;
@@ -10,15 +10,11 @@ export type MemoryCacheStore<Type> = Map<string, MemoryCacheValue<Type>> | Set<M
 export abstract class MemoryCache<Type> extends Cache {
   private static readonly CACHE_SAMPLES = 20;
   private static readonly CACHE_RECHECK_COUNT = (100 * MemoryCache.CACHE_SAMPLES) / 25;
-  protected abstract readonly store: MemoryCacheStore<Type>;
+  protected abstract store: MemoryCacheStore<Type>;
 
-  constructor(defaultExpiry?: string | number) {
+  constructor(defaultExpiry?: Expiry) {
     super(undefined, defaultExpiry);
     setInterval(this.checkForExpiredKeys.bind(this), 100);
-  }
-
-  public async clear(): Promise<void> {
-    return this.store.clear();
   }
 
   // implements basically the same algorithm redis uses https://redis.io/commands/expire#how-redis-expires-keys

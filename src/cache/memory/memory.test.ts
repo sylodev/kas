@@ -1,7 +1,7 @@
-import { MemoryMapCache } from "../src";
-import { sleep } from "../src/helpers/sleep";
+import { sleep } from "../../helpers/sleep";
+import { MemoryMapCache } from "./map.memory";
 
-describe("Kas Memory Cache", () => {
+describe("Kas Memory Map Cache", () => {
   test("Should cache data for 2 seconds", async () => {
     const cache = new MemoryMapCache<string>("2s");
     expect(await cache.set("test", "sweet")).toBeTruthy();

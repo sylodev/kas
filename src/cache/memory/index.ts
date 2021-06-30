@@ -1,1 +1,1 @@
-export * from "./MemoryMapCache";
+export * from "./map.memory";

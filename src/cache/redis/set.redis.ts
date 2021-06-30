@@ -1,5 +1,5 @@
-import { SetCache } from "../base/SetCache";
-import { RedisCache } from "./RedisCache";
+import { SetCache } from "../interfaces/set-cache.interface";
+import { RedisCache } from "./base.redis";
 
 export class RedisSetCache<Type> extends RedisCache implements SetCache<Type> {
   public async add(data: Type): Promise<boolean> {
@@ -21,5 +21,9 @@ export class RedisSetCache<Type> extends RedisCache implements SetCache<Type> {
     const stringified = JSON.stringify(data);
     await this.redis.srem(this.namespace, stringified);
     return true;
+  }
+
+  public async clear(): Promise<void> {
+    return super.clear();
   }
 }

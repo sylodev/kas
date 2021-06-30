@@ -1,5 +1,6 @@
-import { MapCache } from "../base/MapCache";
-import { MemoryCache, MemoryCacheValue } from "./MemoryCache";
+import { Expiry } from "../cache";
+import { MapCache } from "../interfaces/map-cache.interface";
+import { MemoryCache, MemoryCacheValue } from "./base.memory";
 
 export class MemoryMapCache<Type> extends MemoryCache<Type> implements MapCache<Type> {
   protected readonly store = new Map<string, MemoryCacheValue<Type>>();
@@ -14,7 +15,8 @@ export class MemoryMapCache<Type> extends MemoryCache<Type> implements MapCache<
     return data?.value;
   }
 
-  public async set(key: string, data: Type, ttl?: string | number): Promise<boolean> {
+  public async set(key: string, data: Type, ttl?: Expiry): Promise<boolean> {
+    if (data == null) return false;
     const expiresIn = this.getRelativeExpiry(ttl);
     const expiresAt = expiresIn !== undefined ? Date.now() + expiresIn : undefined;
     this.store.set(key, { value: data, expiresAt });
@@ -34,5 +36,9 @@ export class MemoryMapCache<Type> extends MemoryCache<Type> implements MapCache<
 
   public async delete(key: string): Promise<boolean> {
     return this.store.delete(key);
+  }
+
+  public async clear(): Promise<void> {
+    return this.store.clear();
   }
 }

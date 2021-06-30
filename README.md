@@ -12,12 +12,8 @@
 
 ## basic usage
 
-start by adding it to your project from the npm registry:
-
 ```bash
 yarn add @sylo-digital/kas
-# or
-npm install @sylo-digital/kas
 ```
 
 ### memory cache
@@ -38,7 +34,7 @@ import { RedisMapCache } from "@sylo-digital/kas";
 import { connectionOptions } from "./constants";
 
 const redis = new Redis(connectionOptions);
-const cache = new RedisMapCache<string>(redis, "namespace" { defaultExpiry: "5s" });
+const cache = new RedisMapCache<string>(redis, "namespace", { defaultExpiry: "5s" });
 // or
 const cache = new RedisMapCache<string>(connectionOptions, "namespace", { defaultExpiry: "5s" });
 

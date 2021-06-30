@@ -1,2 +1,2 @@
-export * from "./RedisMapCache";
-export * from "./RedisSetCache";
+export * from "./map.redis";
+export * from "./set.redis";
