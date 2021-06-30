@@ -11,7 +11,7 @@
     "dist"
   ],
   "scripts": {
-    "test": "jest --coverage --forceExit",
+    "test": "jest --coverage --runInBand --forceExit",
     "build": "tsc --build",
     "prepack ": "npm run build"
   },

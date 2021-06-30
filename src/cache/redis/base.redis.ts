@@ -12,11 +12,11 @@ export abstract class RedisCache extends Cache {
   protected readonly namespace: string;
   protected readonly enableClear?: boolean;
 
-  constructor(hostOrOptions: RedisHost, namespace: string, options?: RedisCacheOptions) {
+  constructor(host: RedisHost, namespace: string, options?: RedisCacheOptions) {
     super(undefined, options?.defaultExpiry);
     this.namespace = namespace;
     this.enableClear = options?.enableExpensiveClear;
-    this.redis = resolveRedisInstance(hostOrOptions, options);
+    this.redis = resolveRedisInstance(host, options);
   }
 
   protected async clear(namespace?: string): Promise<void> {

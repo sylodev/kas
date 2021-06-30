@@ -16,23 +16,23 @@ describe("Kas Redis Map Cache", () => {
   });
   test("Should delete cached data", async () => {
     const cache = new RedisMapCache<string>(client, "fortnite");
-    expect(await cache.set("pog", "gers")).toBeTruthy();
-    expect(await cache.get("pog")).toBe("gers");
-    expect(await cache.delete("pog")).toBeTruthy();
-    expect(await cache.get("pog")).toBeUndefined();
+    expect(await cache.set("test", "epic")).toBeTruthy();
+    expect(await cache.get("test")).toBe("epic");
+    expect(await cache.delete("test")).toBeTruthy();
+    expect(await cache.get("test")).toBeUndefined();
   });
   test("Should clear all cached data", async () => {
     const cache = new RedisMapCache<string>(client, "fortnite", { enableExpensiveClear: true });
-    expect(await cache.set("one", "two")).toBeTruthy();
-    expect(await cache.get("one")).toBe("two");
+    expect(await cache.set("test", "epic")).toBeTruthy();
+    expect(await cache.get("test")).toBe("epic");
     expect(await cache.clear()).toBeUndefined();
-    expect(await cache.get("one")).toBeUndefined();
+    expect(await cache.get("test")).toBeUndefined();
   });
   test("Should check if cached data exists", async () => {
     const cache = new RedisMapCache<string>(client, "fortnite");
-    expect(await cache.set("built", "differently")).toBeTruthy();
-    expect(await cache.has("built")).toBeTruthy();
-    expect(await cache.delete("built")).toBeTruthy();
-    expect(await cache.has("built")).toBeFalsy();
+    expect(await cache.set("test", "epic")).toBeTruthy();
+    expect(await cache.has("test")).toBeTruthy();
+    expect(await cache.delete("test")).toBeTruthy();
+    expect(await cache.has("test")).toBeFalsy();
   });
 });
