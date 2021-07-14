@@ -4,7 +4,7 @@ import { MapCache } from "../interfaces/map-cache.interface";
 import { RedisCache } from "./base.redis";
 
 export class RedisMapCache<Type> extends RedisCache implements MapCache<Type> {
-  private membersNamespace = `members:${this.namespace}`;
+  private readonly membersNamespace = `members:${this.namespace}`;
 
   public async get(key: string): Promise<Type | undefined> {
     const prefixedKey = this.getPrefixedKey(key);
