@@ -30,8 +30,8 @@ await cache.get("foo"); // "bar"
 
 ```ts
 import Redis from "ioredis";
-import { RedisMapCache } from "@sylo-digital/kas";
 import { connectionOptions } from "./constants";
+import { RedisMapCache } from "@sylo-digital/kas";
 
 const redis = new Redis(connectionOptions);
 const cache = new RedisMapCache<string>(redis, "namespace", { defaultExpiry: "5s" });
