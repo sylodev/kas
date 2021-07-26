@@ -1,4 +1,4 @@
-import { SetOption } from "../../types";
+import { SetOption } from "../types";
 import { Expiry } from "../cache";
 import { MapCache } from "../interfaces/map-cache.interface";
 import { RedisCache } from "./base.redis";

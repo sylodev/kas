@@ -1,5 +1,5 @@
 import { Redis, RedisOptions } from "ioredis";
-import { RedisHost, resolveRedisInstance } from "../../helpers/resolve-redis-instance";
+import { RedisHost, resolveRedisInstance } from "../helpers/resolve-redis-instance";
 import { Cache, Expiry } from "../cache";
 
 export interface RedisCacheOptions extends RedisOptions {
