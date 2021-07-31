@@ -10,13 +10,7 @@
 - string-based ttls (although raw milliseconds is supported if you want that extra performance, along with an exported `Duration` enum with some pre-calculated durations)
 - implements a passive method and probabilistic algorithm ([similar to redis](https://redis.io/commands/expire#how-redis-expires-keys)) to automatically expire memory cache entries
 
-## basic usage
-
-```bash
-yarn add @sylo-digital/kas
-```
-
-### memory cache
+## usage
 
 ```ts
 import { MemoryMapCache } from "@sylo-digital/kas";

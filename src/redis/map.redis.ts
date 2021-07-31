@@ -1,10 +1,17 @@
-import { SetOption } from "../types";
 import { Expiry } from "../cache";
+import { RedisHost } from "../helpers/resolve-redis-instance";
 import { MapCache } from "../interfaces/map-cache.interface";
-import { RedisCache } from "./base.redis";
+import { SetOption } from "../types";
+import { RedisCache, RedisCacheOptions } from "./base.redis";
 
 export class RedisMapCache<Type> extends RedisCache implements MapCache<Type> {
+  private readonly enableClear?: boolean;
   private readonly membersNamespace = `members:${this.namespace}`;
+
+  constructor(host: RedisHost, namespace: string, options?: RedisCacheOptions) {
+    super(host, namespace, options);
+    this.enableClear = options?.enableExpensiveClear;
+  }
 
   public async get(key: string): Promise<Type | undefined> {
     const prefixedKey = this.getPrefixedKey(key);
@@ -45,6 +52,10 @@ export class RedisMapCache<Type> extends RedisCache implements MapCache<Type> {
   }
 
   public async clear(): Promise<void> {
+    if (!this.enableClear)
+      throw new Error(
+        "Enable expensive clear option to clear redis caches. Please keep in mind, previously set key-value pairs will not be cleared."
+      );
     // important so we don't unintentionally obliterate an unrelated set
     return super.clear(this.membersNamespace);
   }

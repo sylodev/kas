@@ -18,7 +18,7 @@ describe("Kas Redis Set Cache", () => {
     expect(await cache.has("test")).toBeFalsy();
   });
   test("Should clear cached data", async () => {
-    const cache = new RedisSetCache<string>(client, "fortnite", { enableExpensiveClear: true });
+    const cache = new RedisSetCache<string>(client, "fortnite");
     expect(await cache.add("test")).toBeTruthy();
     expect(await cache.has("test")).toBeTruthy();
     expect(await cache.clear()).toBeUndefined();
