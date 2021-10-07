@@ -8,9 +8,9 @@ export class RedisMapCache<Type> extends RedisCache implements MapCache<Type> {
   private readonly enableClear?: boolean;
   private readonly membersNamespace = `members:${this.namespace}`;
 
-  constructor(host: RedisHost, namespace: string, options?: RedisCacheOptions) {
-    super(host, namespace, options);
-    this.enableClear = options?.enableExpensiveClear;
+  constructor(host: RedisHost, namespace: string, _options?: RedisCacheOptions | string) {
+    super(host, namespace, RedisMapCache.resolveOptions(_options));
+    this.enableClear = this.options?.enableExpensiveClear;
   }
 
   public async get(key: string): Promise<Type | undefined> {
@@ -58,5 +58,10 @@ export class RedisMapCache<Type> extends RedisCache implements MapCache<Type> {
       );
     // important so we don't unintentionally obliterate an unrelated set
     return super.clear(this.membersNamespace);
+  }
+
+  static resolveOptions(options?: RedisCacheOptions | string) {
+    if (typeof options === "string") return { defaultExpiry: options };
+    return options;
   }
 }

@@ -10,9 +10,11 @@ export interface RedisCacheOptions extends RedisOptions {
 export abstract class RedisCache extends Cache {
   protected readonly redis: Redis;
   protected readonly namespace: string;
+  protected readonly options?: RedisCacheOptions;
 
   constructor(host: RedisHost, namespace: string, options?: RedisCacheOptions) {
     super(undefined, options?.defaultExpiry);
+    this.options = options;
     this.namespace = namespace;
     this.redis = resolveRedisInstance(host, options);
   }
