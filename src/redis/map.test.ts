@@ -35,4 +35,8 @@ describe("Kas Redis Map Cache", () => {
     expect(await cache.delete("test")).toBeTruthy();
     expect(await cache.has("test")).toBeFalsy();
   });
+  test('Should allow the "options" parameter to be a expiry string', async () => {
+    const cache = new RedisMapCache<string>(client, "fortnite", "5s");
+    expect((cache as any).defaultExpiry).toBe(5000);
+  });
 });
