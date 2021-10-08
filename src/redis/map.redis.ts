@@ -8,8 +8,8 @@ export class RedisMapCache<Type> extends RedisCache implements MapCache<Type> {
   private readonly enableClear?: boolean;
   private readonly membersNamespace = `members:${this.namespace}`;
 
-  constructor(host: RedisHost, namespace: string, _options?: RedisCacheOptions | string) {
-    super(host, namespace, RedisMapCache.resolveOptions(_options));
+  constructor(host: RedisHost, namespace: string, options?: RedisCacheOptions | Expiry) {
+    super(host, namespace, RedisMapCache.resolveOptions(options));
     this.enableClear = this.options?.enableExpensiveClear;
   }
 
@@ -60,8 +60,8 @@ export class RedisMapCache<Type> extends RedisCache implements MapCache<Type> {
     return super.clear(this.membersNamespace);
   }
 
-  static resolveOptions(options?: RedisCacheOptions | string) {
-    if (typeof options === "string") return { defaultExpiry: options };
+  static resolveOptions(options?: RedisCacheOptions | Expiry) {
+    if (typeof options === "string" || typeof options === "number") return { defaultExpiry: options };
     return options;
   }
 }
