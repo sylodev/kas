@@ -1,27 +1,27 @@
 import { Expiry } from "../cache";
-import { parseBoolean } from "../helpers/parse-boolean";
+import { parseRedisBoolean } from "../helpers/parse-redis-boolean";
 import { RedisHost } from "../helpers/resolve-redis-instance";
 import { MapCache } from "../interfaces/map-cache.interface";
 import { SetOption } from "../types";
 import { RedisCache, RedisCacheOptions } from "./base.redis";
 
 export class RedisMapCache<Type> extends RedisCache implements MapCache<Type> {
-  private readonly enableClear?: boolean;
   private readonly membersNamespace = `members:${this.namespace}`;
+  private readonly enableClear?: boolean;
 
   constructor(host: RedisHost, namespace: string, options?: RedisCacheOptions | Expiry) {
     super(host, namespace, RedisMapCache.resolveOptions(options));
     this.enableClear = this.options?.enableExpensiveClear;
   }
 
-  public async get(key: string): Promise<Type | undefined> {
+  public async get(key: string) {
     const prefixedKey = this.getPrefixedKey(key);
     const stringified = await this.redis.get(prefixedKey);
     if (stringified === null) return;
     return JSON.parse(stringified);
   }
 
-  public async set(key: string, data: Type, ttl?: Expiry, mode?: SetOption): Promise<boolean> {
+  public async set(key: string, data: Type, ttl?: Expiry, mode?: SetOption) {
     if (data == null) return false;
     const prefixedKey = this.getPrefixedKey(key);
     const stringified = JSON.stringify(data);
@@ -39,20 +39,20 @@ export class RedisMapCache<Type> extends RedisCache implements MapCache<Type> {
     return true;
   }
 
-  public async has(key: string): Promise<boolean> {
+  public async has(key: string) {
     const prefixedKey = this.getPrefixedKey(key);
     const exists = await this.redis.exists(prefixedKey);
-    return parseBoolean(exists);
+    return parseRedisBoolean(exists);
   }
 
-  public async delete(key: string): Promise<boolean> {
+  public async delete(key: string) {
     const prefixedKey = this.getPrefixedKey(key);
     if (this.enableClear) await this.redis.srem(this.membersNamespace, prefixedKey);
     await this.redis.del(prefixedKey);
     return true;
   }
 
-  public async clear(): Promise<void> {
+  public async clear() {
     if (!this.enableClear)
       throw new Error(
         "Enable expensive clear option to clear redis caches. Please keep in mind, previously set key-value pairs will not be cleared."

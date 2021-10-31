@@ -5,5 +5,12 @@ export function resolveRedisInstance(host: RedisHost, options?: Redis.RedisOptio
   if (host instanceof Redis || typeof Redis) return host as Redis.Redis;
   // host parameter being used as connection uri
   if (typeof host === "string") return new Redis(host, options);
-  return new Redis(host);
+  if (isRedisOptions(host)) return new Redis(host);
+  throw new Error("Could not resolve redis connection instance.");
+}
+
+function isRedisOptions(input: unknown): input is Redis.RedisOptions {
+  if (typeof input !== "object") throw new Error("Expected input to be an object.");
+  if (input === null) throw new Error("Input cannot be null.");
+  return "host" in input && "port" in input;
 }
