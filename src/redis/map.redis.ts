@@ -101,7 +101,7 @@ export class RedisMapCache<Type> extends RedisCache implements AsyncMapCache<Typ
   }
 
   /**
-   * Gets all keys in the cache.
+   * Gets all items in the cache.
    * @throws if the "trackKeys" option is not enabled.
    */
   public async keys(): Promise<string[]> {

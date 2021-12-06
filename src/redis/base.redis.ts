@@ -30,9 +30,6 @@ export abstract class RedisCache extends Cache {
     super(undefined, options?.defaultExpiry);
     this.options = options;
     this.namespace = namespace;
-    // todo: not great
-    delete options?.defaultExpiry;
-    delete options?.enableExpensiveClear;
     this.redis = resolveRedisInstance(host, options);
   }
 }

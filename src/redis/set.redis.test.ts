@@ -1,23 +1,30 @@
+import { Redis } from "ioredis";
 import MockRedis from "ioredis-mock";
 import { RedisSetCache } from "./set.redis";
 
 jest.setMock("ioredis", () => require("ioredis-mock"));
-const client = new MockRedis();
 
-describe("Kas Redis Set Cache", () => {
-  test("Should cache data", async () => {
+let client: Redis;
+beforeEach(() => {
+  client = new MockRedis();
+});
+
+describe("RedisSetCache", () => {
+  it("Should cache data", async () => {
     const cache = new RedisSetCache<string>(client, "fortnite");
     expect(await cache.add("test")).toBeTruthy();
     expect(await cache.has("test")).toBeTruthy();
   });
-  test("Should delete cached data", async () => {
+
+  it("Should delete cached data", async () => {
     const cache = new RedisSetCache<string>(client, "fortnite");
     expect(await cache.add("test")).toBeTruthy();
     expect(await cache.has("test")).toBeTruthy();
     expect(await cache.delete("test")).toBeTruthy();
     expect(await cache.has("test")).toBeFalsy();
   });
-  test("Should clear cached data", async () => {
+
+  it("Should clear cached data", async () => {
     const cache = new RedisSetCache<string>(client, "fortnite");
     expect(await cache.add("test")).toBeTruthy();
     expect(await cache.has("test")).toBeTruthy();

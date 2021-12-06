@@ -9,6 +9,9 @@ export class MemoryMapCache<Type> extends Cache implements MapCache<Type> {
     super(undefined, defaultExpiry);
   }
 
+  /**
+   * Add an item to the cache.
+   */
   public set(key: string, data: Type, ttl?: Expiry) {
     if (data === undefined) return true;
     const expiresIn = this.getRelativeExpiry(ttl);
@@ -18,20 +21,32 @@ export class MemoryMapCache<Type> extends Cache implements MapCache<Type> {
     return true;
   }
 
+  /**
+   * Get a keys value from the cache.
+   */
   public get(key: string) {
     return this.store.get(key);
   }
 
+  /**
+   * Check if the cache has a key.
+   */
   public has(key: string) {
     return this.store.has(key);
   }
 
+  /**
+   * Delete a key from the cache.
+   */
   public delete(key: string) {
     const timerId = this.timers.get(key);
     if (timerId) clearTimeout(timerId);
     return this.store.delete(key);
   }
 
+  /**
+   * Clear all items in the cache.
+   */
   public clear() {
     for (const timerId of this.timers.values()) clearTimeout(timerId);
     this.timers.clear();
