@@ -12,3 +12,9 @@ export enum Duration {
   ONE_MONTH = 2.628e9,
   ONE_YEAR = 3.154e10,
 }
+
+export type AsyncReturnValues<T extends {}> = {
+  [key in keyof T]: T[key] extends (...args: any) => any
+    ? (...args: Parameters<T[key]>) => Promise<ReturnType<T[key]>>
+    : T[key];
+};

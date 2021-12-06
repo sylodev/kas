@@ -1,44 +1,41 @@
 import { Expiry } from "../cache";
 import { MapCache } from "../interfaces/map-cache.interface";
-import { MemoryCache, MemoryCacheValue } from "./base.memory";
+import { Cache } from "../cache";
 
-export class MemoryMapCache<Type> extends MemoryCache<Type> implements MapCache<Type> {
-  protected readonly store = new Map<string, MemoryCacheValue<Type>>();
+export class MemoryMapCache<Type> extends Cache implements MapCache<Type> {
+  protected readonly store = new Map<string, Type>();
+  private readonly timers = new Map<string, NodeJS.Timeout>();
 
-  public async get(key: string): Promise<Type | undefined> {
-    const data = this.store.get(key);
-    if (data?.expiresAt && Date.now() >= data.expiresAt) {
-      this.store.delete(key);
-      return;
-    }
-
-    return data?.value;
+  constructor(defaultExpiry?: Expiry) {
+    super(undefined, defaultExpiry);
   }
 
-  public async set(key: string, data: Type, ttl?: Expiry): Promise<boolean> {
-    if (data == null) return false;
+  public set(key: string, data: Type, ttl?: Expiry) {
+    if (data === undefined) return true;
     const expiresIn = this.getRelativeExpiry(ttl);
-    const expiresAt = expiresIn !== undefined ? Date.now() + expiresIn : undefined;
-    this.store.set(key, { value: data, expiresAt });
+    this.store.set(key, data);
+    const timerId = setTimeout(() => this.store.delete(key), expiresIn);
+    this.timers.set(key, timerId);
     return true;
   }
 
-  public async has(key: string): Promise<boolean> {
-    const data = this.store.get(key);
-    if (data === undefined) return false;
-    if (data.expiresAt && Date.now() >= data.expiresAt) {
-      this.store.delete(key);
-      return false;
-    }
-
-    return true;
+  public get(key: string) {
+    return this.store.get(key);
   }
 
-  public async delete(key: string): Promise<boolean> {
+  public has(key: string) {
+    return this.store.has(key);
+  }
+
+  public delete(key: string) {
+    const timerId = this.timers.get(key);
+    if (timerId) clearTimeout(timerId);
     return this.store.delete(key);
   }
 
-  public async clear(): Promise<void> {
+  public clear() {
+    for (const timerId of this.timers.values()) clearTimeout(timerId);
+    this.timers.clear();
     return this.store.clear();
   }
 }

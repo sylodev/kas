@@ -1,7 +1,7 @@
-import { SetCache } from "../interfaces/set-cache.interface";
+import { AsyncSetCache } from "../interfaces/set-cache.interface";
 import { RedisCache } from "./base.redis";
 
-export class RedisSetCache<Type> extends RedisCache implements SetCache<Type> {
+export class RedisSetCache<Type> extends RedisCache implements AsyncSetCache<Type> {
   /**
    * Add an item to the set.
    */
