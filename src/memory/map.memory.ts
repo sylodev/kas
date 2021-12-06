@@ -1,6 +1,5 @@
-import { Expiry } from "../cache";
+import { Cache, Expiry } from "../cache";
 import { MapCache } from "../interfaces/map-cache.interface";
-import { Cache } from "../cache";
 
 export class MemoryMapCache<Type> extends Cache implements MapCache<Type> {
   protected readonly store = new Map<string, Type>();
