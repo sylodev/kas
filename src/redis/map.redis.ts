@@ -1,4 +1,5 @@
 import { Expiry } from "../cache";
+import { parseRedisBoolean } from "../helpers/parse-redis-boolean";
 import { RedisLike } from "../helpers/resolve-redis-instance";
 import { MapCache } from "../interfaces/map-cache.interface";
 import { SetOption } from "../types";
@@ -86,7 +87,7 @@ export class RedisMapCache<Type> extends RedisCache implements MapCache<Type> {
   public async has(key: string): Promise<boolean> {
     const prefixedKey = this.getPrefixedKey(key);
     const exists = await this.redis.exists(prefixedKey);
-    return exists === 1 ? true : false;
+    return parseRedisBoolean(exists);
   }
 
   /**
