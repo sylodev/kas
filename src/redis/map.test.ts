@@ -7,11 +7,10 @@ const client = new MockRedis();
 
 describe("Kas Redis Map Cache", () => {
   test("Should cache data for 2 seconds", async () => {
-    const cache = new RedisMapCache<string>(client, "fortnite", { defaultExpiry: "2s" });
+    const cache = new RedisMapCache<string>(client, "fortnite", { defaultExpiry: 50 });
     expect(await cache.set("test", "epic")).toBeTruthy();
     expect(await cache.get("test")).toBe("epic");
-
-    await sleep(2000);
+    await sleep(50);
     expect(await cache.get("test")).toBeUndefined();
   });
   test("Should delete cached data", async () => {

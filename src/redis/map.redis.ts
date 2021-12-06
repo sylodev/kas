@@ -1,11 +1,11 @@
 import { Expiry } from "../cache";
 import { parseRedisBoolean } from "../helpers/parse-redis-boolean";
 import { RedisLike } from "../helpers/resolve-redis-instance";
-import { MapCache } from "../interfaces/map-cache.interface";
+import { AsyncMapCache } from "../interfaces/map-cache.interface";
 import { SetOption } from "../types";
 import { RedisCache, RedisCacheOptions } from "./base.redis";
 
-export class RedisMapCache<Type> extends RedisCache implements MapCache<Type> {
+export class RedisMapCache<Type> extends RedisCache implements AsyncMapCache<Type> {
   private readonly trackKeys?: boolean;
 
   constructor(host: RedisLike, namespace: string, options?: RedisCacheOptions | Expiry) {
