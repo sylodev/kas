@@ -22,7 +22,7 @@ describe("Kas Redis Map Cache", () => {
     expect(await cache.get("test")).toBeUndefined();
   });
   test("Should clear all cached data", async () => {
-    const cache = new RedisMapCache<string>(client, "fortnite", { enableExpensiveClear: true });
+    const cache = new RedisMapCache<string>(client, "fortnite", { trackKeys: true });
     expect(await cache.set("test", "epic")).toBeTruthy();
     expect(await cache.get("test")).toBe("epic");
     expect(await cache.clear()).toBeUndefined();
@@ -38,5 +38,16 @@ describe("Kas Redis Map Cache", () => {
   test('Should allow the "options" parameter to be a expiry string', async () => {
     const cache = new RedisMapCache<string>(client, "fortnite", "5s");
     expect((cache as any).defaultExpiry).toBe(5000);
+  });
+  it('should return a list of keys from the "keys" method', async () => {
+    const cache = new RedisMapCache<string>(client, "fortnite", { trackKeys: true });
+    await cache.set("test1", "epic");
+    expect(await cache.keys()).toEqual(["test1"]);
+    await cache.set("test2", "epic");
+    expect(await cache.keys()).toEqual(["test1", "test2"]);
+    await cache.delete("test1");
+    expect(await cache.keys()).toEqual(["test2"]);
+    await cache.clear();
+    expect(await cache.keys()).toEqual([]);
   });
 });
