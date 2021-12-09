@@ -12,6 +12,7 @@
   ],
   "scripts": {
     "test": "jest --coverage --runInBand",
+    "lint": "eslint --cache --ext .ts .",
     "build": "tsup",
     "prepack ": "npm run build"
   },
@@ -30,6 +31,10 @@
     "@types/ioredis": "^4.27.6",
     "@types/jest": "^26.0.24",
     "@types/ms": "^0.7.31",
+    "@typescript-eslint/eslint-plugin": "^5.6.0",
+    "@typescript-eslint/parser": "^5.6.0",
+    "eslint": "^8.4.1",
+    "eslint-plugin-jsdoc": "^37.2.0",
     "ioredis": "^4.27.6",
     "ioredis-mock": "^5.6.0",
     "jest": "^27.3.1",
