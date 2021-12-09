@@ -57,7 +57,7 @@ export class RedisMapCache<Type> extends RedisCache implements AsyncMapCache<Typ
     if (this.trackKeys) {
       await this.redis
         .pipeline()
-        .sadd(this.membersSetKey, key)
+        .sadd(this.membersSetKey, prefixedKey)
         .set(...params)
         .exec();
     } else {
