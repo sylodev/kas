@@ -87,6 +87,9 @@ describe("RedisMapCache", () => {
   it("should handle getting all entries in the cache", async () => {
     const cache = new RedisMapCache<string>(client, "fortnite", { trackKeys: true });
 
+    // redis doesnt like mget with no keys. ioredis-mock doesnt catch this.
+    expect(await getGeneratorValues(cache.entries())).toEqual([]);
+
     await cache.set("test1", "epic1");
     await cache.set("test2", "epic2");
     expect(await cache.keys()).toEqual(["test1", "test2"]);
@@ -106,6 +109,9 @@ describe("RedisMapCache", () => {
 
   it("should handle getting all values in the cache", async () => {
     const cache = new RedisMapCache<string>(client, "fortnite", { trackKeys: true });
+
+    // redis doesnt like mget with no keys. ioredis-mock doesnt catch this.
+    expect(await cache.values()).toEqual([]);
 
     await cache.set("test1", "epic1");
     await cache.set("test2", "epic2");

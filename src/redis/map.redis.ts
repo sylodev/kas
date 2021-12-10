@@ -43,6 +43,7 @@ export class RedisMapCache<Type> extends RedisCache implements AsyncMapCache<Typ
    * @returns a list of values matching the same indexes as the keys for that value.
    */
   async getMany(keys: string[]): Promise<Type[]> {
+    if (!keys[0]) return [];
     const prefixedKeys = keys.map((key) => this.getPrefixedKey(key));
     const values = await this.redis.mget(...prefixedKeys);
     return values.map((value) => (value === null ? value : JSON.parse(value)));
