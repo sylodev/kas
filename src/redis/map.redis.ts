@@ -39,6 +39,16 @@ export class RedisMapCache<Type> extends RedisCache implements AsyncMapCache<Typ
   }
 
   /**
+   * Get multiple keys at once.
+   * @returns a list of values matching the same indexes as the keys for that value.
+   */
+  async getMany(keys: string[]): Promise<Type[]> {
+    const prefixedKeys = keys.map((key) => this.getPrefixedKey(key));
+    const values = await this.redis.mget(...prefixedKeys);
+    return values.map((value) => (value === null ? value : JSON.parse(value)));
+  }
+
+  /**
    * Add an item to the cache.
    */
   public async set(key: string, data: Type, ttl?: Expiry, mode?: SetOption): Promise<boolean> {
@@ -114,28 +124,28 @@ export class RedisMapCache<Type> extends RedisCache implements AsyncMapCache<Typ
   }
 
   /**
+   * Get every value in the cache.
+   * @throws if the "trackKeys" option is not enabled.
+   */
+  public async values(): Promise<Type[]> {
+    const keys = await this.keys();
+    const values = await this.getMany(keys);
+    return values.filter((value) => value !== null) as Type[];
+  }
+
+  /**
    * Get every key with its value in the cache.
    * @throws if the "trackKeys" option is not enabled.
    */
   public async *entries(): AsyncGenerator<[string, Type]> {
     const keys = await this.keys();
-    const prefixed = keys.map((key) => this.getPrefixedKey(key));
-    const values = await this.redis.mget(...prefixed);
+    const values = await this.getMany(keys);
     for (let i = 0; i < keys.length; i++) {
-      const value = values[i];
-      if (!value) continue;
       const key = keys[i];
-      yield [key, JSON.parse(value)];
-    }
-  }
-
-  /**
-   * Get every value in the cache.
-   * @throws if the "trackKeys" option is not enabled.
-   */
-  public async *values(): AsyncGenerator<Type> {
-    for await (const entry of this.entries()) {
-      yield entry[1];
+      const value = values[i];
+      if (value !== null) {
+        yield [key, value];
+      }
     }
   }
 

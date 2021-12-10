@@ -74,6 +74,16 @@ describe("RedisMapCache", () => {
     expect(await cache.keys()).toEqual([]);
   });
 
+  it("should support getting multiple keys", async () => {
+    const cache = new RedisMapCache<string>(client, "fortnite", { trackKeys: true });
+
+    await cache.set("test1", "epic");
+    await cache.set("test2", "epic");
+    await cache.set("test3", "epic");
+
+    expect(await cache.getMany(["test1", "test2", "test3"])).toEqual(["epic", "epic", "epic"]);
+  });
+
   it("should handle getting all entries in the cache", async () => {
     const cache = new RedisMapCache<string>(client, "fortnite", { trackKeys: true });
 
@@ -99,15 +109,15 @@ describe("RedisMapCache", () => {
 
     await cache.set("test1", "epic1");
     await cache.set("test2", "epic2");
-    expect(await getGeneratorValues(cache.values())).toEqual(["epic1", "epic2"]);
+    expect(await cache.values()).toEqual(["epic1", "epic2"]);
 
     // deleting keys should remove them from the result
     await cache.delete("test1");
-    expect(await getGeneratorValues(cache.values())).toEqual(["epic2"]);
+    expect(await cache.values()).toEqual(["epic2"]);
 
     // clearing everything should mean an empty result
     await cache.clear();
-    expect(await getGeneratorValues(cache.values())).toEqual([]);
+    expect(await cache.values()).toEqual([]);
   });
 
   it("should support null values", async () => {
