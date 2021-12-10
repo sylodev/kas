@@ -1,16 +1,43 @@
 import Redis from "ioredis";
 
+const REDIS_CLASS_NAMES = new Set(["Redis", "RedisClient", "RedisCluster", "RedisSentinel", "RedisMock"]);
+
 export type RedisLike = string | Redis.RedisOptions | Redis.Redis;
-export function resolveRedisInstance(host: RedisLike, options?: Redis.RedisOptions): Redis.Redis {
-  if (host instanceof Redis) return host as Redis.Redis;
-  // host parameter being used as connection uri
-  if (typeof host === "string") return new Redis(host, options);
-  if (isRedisHostOptions(host)) return new Redis(host);
-  throw new Error("Could not resolve redis connection instance.");
+
+function isObject(input: unknown): input is Record<string, unknown> {
+  return typeof input === "object" && input !== null;
 }
 
-function isRedisHostOptions(input: unknown): input is Redis.RedisOptions {
-  if (typeof input !== "object") throw new Error("Expected input to be an object.");
-  if (input === null) throw new Error("Input cannot be null.");
-  return "host" in input && "port" in input;
+/**
+ * Resolve a redis instance from a connection uri, options or an existing redis instance.
+ * This uses fairly lax rules because typescript should prevent stupid people from being stupid.
+ * @throws if the instance could not be resolved
+ */
+export function resolveRedisInstance(host: RedisLike, options?: Redis.RedisOptions): Redis.Redis {
+  // "host" parameter being used as a connection uri
+  if (typeof host === "string") {
+    return new Redis(host, options);
+  }
+
+  // "host" option appears to be an instanceof "Redis" or a related class
+  // this is a flaky test as some transpilers will change the class name, or they could have an unrelated class called "Redis",
+  // this will cover "RedisMock" support, some circular dependency issues and other edge cases, basically "Redis" instances that
+  // arent *technically* instances of Redis but are still usable redis instances.
+  if (REDIS_CLASS_NAMES.has(host.constructor.name)) {
+    return host as Redis.Redis;
+  }
+
+  // "host" option is an instance of Redis - this covers for classes that extend Redis
+  // or that have been renamed by a transpiler to something other than "Redis"
+  if (host instanceof Redis) {
+    return host as Redis.Redis;
+  }
+
+  // "host" parameter being used as a RedisOptions object
+  // this is very lax but it should be fine™️ for almost everything else.
+  if (isObject(host)) {
+    return new Redis(host);
+  }
+
+  throw new Error("Could not resolve redis connection instance.");
 }
