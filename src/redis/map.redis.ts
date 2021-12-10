@@ -39,10 +39,19 @@ export class RedisMapCache<Type> extends RedisCache implements AsyncMapCache<Typ
   }
 
   /**
+   * Get multiple keys at once.
+   * @returns a list of values matching the same indexes as the keys for that value.
+   */
+  async getMany(keys: string[]): Promise<Type[]> {
+    const prefixedKeys = keys.map((key) => this.getPrefixedKey(key));
+    const values = await this.redis.mget(...prefixedKeys);
+    return values.map((value) => (value === null ? value : JSON.parse(value)));
+  }
+
+  /**
    * Add an item to the cache.
    */
   public async set(key: string, data: Type, ttl?: Expiry, mode?: SetOption): Promise<boolean> {
-    if (data == null) return false;
     const prefixedKey = this.getPrefixedKey(key);
     const stringified = JSON.stringify(data);
     const params: [string, string, ...any] = [prefixedKey, stringified];
@@ -55,9 +64,14 @@ export class RedisMapCache<Type> extends RedisCache implements AsyncMapCache<Typ
 
     if (mode) params.push(mode);
     if (this.trackKeys) {
+      // depending on the redis config, auto pipelining may be enabled so using a pipeline here
+      // might be redundant but if it isnt this will be a minor performance boost.
       await this.redis
         .pipeline()
-        .sadd(this.membersSetKey, prefixedKey)
+        // using the unprefixed key is intentional, it allows keys() to return the keys
+        // without having to remove the prefix. clear() and methods that require the prefixed
+        // key can add it themselves, those lazy bastards.
+        .sadd(this.membersSetKey, key)
         .set(...params)
         .exec();
     } else {
@@ -101,11 +115,38 @@ export class RedisMapCache<Type> extends RedisCache implements AsyncMapCache<Typ
   }
 
   /**
-   * Gets all items in the cache.
+   * Gets the keys of every item in the cache.
+   * The keys are not guaranteed to exist in the cache, though it should be fairly accurate.
    * @throws if the "trackKeys" option is not enabled.
    */
   public async keys(): Promise<string[]> {
     return this.redis.smembers(this.membersSetKey);
+  }
+
+  /**
+   * Get every value in the cache.
+   * @throws if the "trackKeys" option is not enabled.
+   */
+  public async values(): Promise<Type[]> {
+    const keys = await this.keys();
+    const values = await this.getMany(keys);
+    return values.filter((value) => value !== null) as Type[];
+  }
+
+  /**
+   * Get every key with its value in the cache.
+   * @throws if the "trackKeys" option is not enabled.
+   */
+  public async *entries(): AsyncGenerator<[string, Type]> {
+    const keys = await this.keys();
+    const values = await this.getMany(keys);
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      const value = values[i];
+      if (value !== null) {
+        yield [key, value];
+      }
+    }
   }
 
   protected static resolveOptions(options?: RedisCacheOptions | Expiry) {
