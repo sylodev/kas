@@ -1,6 +1,7 @@
 export enum SetOption {
   ONLY_IF_UNSET = "NX",
   ONLY_IF_SET = "XX",
+  KEEP_TTL = "KEEPTTL",
 }
 
 export enum Duration {
