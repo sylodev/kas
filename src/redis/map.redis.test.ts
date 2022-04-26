@@ -2,6 +2,7 @@ import { Redis } from "ioredis";
 import MockRedis from "ioredis-mock";
 import { sleep } from "../helpers/sleep";
 import { RedisMapCache } from "./map.redis";
+import { SetOption } from "../types";
 
 jest.setMock("ioredis", () => require("ioredis-mock"));
 
@@ -135,5 +136,13 @@ describe("RedisMapCache", () => {
     expect(await cache.has("test")).toBeTruthy();
     await cache.delete("test");
     expect(await cache.get("test")).toBeUndefined();
+  });
+
+  it("should support an array of set options", async () => {
+    const cache = new RedisMapCache<string>(client, "fortnite");
+
+    expect(await cache.set("test", "epic1")).toBeTruthy();
+    expect(await cache.set("test", "epic2", 50, [SetOption.KEEP_TTL, SetOption.ONLY_IF_SET])).toBeTruthy();
+    expect(await cache.get("test")).toBe("epic2");
   });
 });

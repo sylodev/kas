@@ -52,7 +52,7 @@ export class RedisMapCache<Type> extends RedisCache implements AsyncMapCache<Typ
   /**
    * Add an item to the cache.
    */
-  public async set(key: string, data: Type, ttl?: Expiry, mode?: SetOption): Promise<boolean> {
+  public async set(key: string, data: Type, ttl?: Expiry, mode?: SetOption[]): Promise<boolean> {
     const prefixedKey = this.getPrefixedKey(key);
     const stringified = JSON.stringify(data);
     const params: [string, string, ...any] = [prefixedKey, stringified];
@@ -63,7 +63,7 @@ export class RedisMapCache<Type> extends RedisCache implements AsyncMapCache<Typ
       params.push("PX", expiresIn);
     }
 
-    if (mode) params.push(mode);
+    if (mode && mode[0]) params.push(...mode);
     if (this.trackKeys) {
       // depending on the redis config, auto pipelining may be enabled so using a pipeline here
       // might be redundant but if it isnt this will be a minor performance boost.
