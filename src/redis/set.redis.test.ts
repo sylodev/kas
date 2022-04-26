@@ -31,4 +31,13 @@ describe("RedisSetCache", () => {
     expect(await cache.clear()).toBeUndefined();
     expect(await cache.has("test")).toBeFalsy();
   });
+
+  it("Should get all cached data with keys()", async () => {
+    const cache = new RedisSetCache<string>(client, "fortnite");
+    expect(await cache.add("test1")).toBeTruthy();
+    expect(await cache.has("test1")).toBeTruthy();
+    expect(await cache.add("test1")).toBeTruthy();
+    expect(await cache.add("test2")).toBeTruthy();
+    expect(await cache.keys()).toEqual(["test1", "test2"]);
+  });
 });

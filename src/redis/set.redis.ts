@@ -39,4 +39,18 @@ export class RedisSetCache<Type> extends RedisCache implements AsyncSetCache<Typ
   public async clear(): Promise<void> {
     await this.redis.del(this.namespace);
   }
+
+  /**
+   * Get all items in the set.
+   */
+  public async values(): Promise<Type[]> {
+    const keys: string[] = await this.redis.smembers(this.namespace);
+    return keys.map((key) => JSON.parse(key));
+  }
+
+  /**
+   * Get all items in the set.
+   * Alias for `values()`, the same way the native Set() works.
+   */
+  keys = this.values;
 }
