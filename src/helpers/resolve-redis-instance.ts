@@ -1,8 +1,8 @@
-import Redis from "ioredis";
+import { RedisOptions, Redis } from "ioredis";
 
 const REDIS_CLASS_NAMES = new Set(["Redis", "RedisClient", "RedisCluster", "RedisSentinel", "RedisMock"]);
 
-export type RedisLike = string | Redis.RedisOptions | Redis.Redis;
+export type RedisLike = string | RedisOptions | Redis;
 
 function isObject(input: unknown): input is Record<string, unknown> {
   return typeof input === "object" && input !== null;
@@ -13,10 +13,11 @@ function isObject(input: unknown): input is Record<string, unknown> {
  * This uses fairly lax rules because typescript should prevent stupid people from being stupid.
  * @throws if the instance could not be resolved
  */
-export function resolveRedisInstance(host: RedisLike, options?: Redis.RedisOptions): Redis.Redis {
+export function resolveRedisInstance(host: RedisLike, options?: RedisOptions): Redis {
   // "host" parameter being used as a connection uri
   if (typeof host === "string") {
-    return new Redis(host, options);
+    if (options) return new Redis(host, options);
+    return new Redis(host);
   }
 
   // "host" option appears to be an instanceof "Redis" or a related class
@@ -24,13 +25,13 @@ export function resolveRedisInstance(host: RedisLike, options?: Redis.RedisOptio
   // this will cover "RedisMock" support, some circular dependency issues and other edge cases, basically "Redis" instances that
   // arent *technically* instances of Redis but are still usable redis instances.
   if (REDIS_CLASS_NAMES.has(host.constructor.name)) {
-    return host as Redis.Redis;
+    return host as Redis;
   }
 
   // "host" option is an instance of Redis - this covers for classes that extend Redis
   // or that have been renamed by a transpiler to something other than "Redis"
   if (host instanceof Redis) {
-    return host as Redis.Redis;
+    return host as Redis;
   }
 
   // "host" parameter being used as a RedisOptions object

@@ -1,4 +1,3 @@
-import { Redis } from "ioredis";
 import MockRedis from "ioredis-mock";
 import { sleep } from "../helpers/sleep";
 import { RedisMapCache } from "./map.redis";
@@ -6,9 +5,11 @@ import { SetOption } from "../types";
 
 jest.setMock("ioredis", () => require("ioredis-mock"));
 
-let client: Redis;
-beforeEach(() => {
-  client = new MockRedis();
+let client = new MockRedis();
+// ioredis-mock now persists data between instances
+// so we need to flush the data after each test
+afterEach((done) => {
+  client.flushall().then(() => done());
 });
 
 async function getGeneratorValues<T>(generator: AsyncGenerator<T, any, any>): Promise<T[]> {
