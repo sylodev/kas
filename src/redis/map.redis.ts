@@ -1,9 +1,9 @@
-import { Expiry } from "../cache";
-import { parseRedisBoolean } from "../helpers/parse-redis-boolean";
-import { RedisLike } from "../helpers/resolve-redis-instance";
-import { AsyncMapCache } from "../interfaces/map-cache.interface";
-import { SetOption } from "../types";
-import { RedisCache, RedisCacheOptions } from "./base.redis";
+import { Expiry } from "../cache.js";
+import { parseRedisBoolean } from "../helpers/parse-redis-boolean.js";
+import { RedisLike } from "../helpers/resolve-redis-instance.js";
+import { AsyncMapCache } from "../interfaces/map-cache.interface.js";
+import { SetOption } from "../types.js";
+import { RedisCache, RedisCacheOptions } from "./base.redis.js";
 
 export class RedisMapCache<Type> extends RedisCache implements AsyncMapCache<Type> {
   private readonly trackKeys?: boolean;

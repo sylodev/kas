@@ -1,17 +1,12 @@
 {
-  "include": ["./src", "./types"],
-  "exclude": ["node_modules", "dist"],
-  "compilerOptions": {
-    "target": "ES2020",
-    "module": "CommonJS",
-    "strict": true,
-    "baseUrl": ".",
-    "outDir": "dist",
-    "typeRoots": ["node_modules/@types", "types"],
-    "esModuleInterop": true,
-    "noUnusedLocals": true,
-    "declaration": true,
-    "sourceMap": true,
-    "noUnusedParameters": true
-  }
+	"extends": "@sindresorhus/tsconfig",
+	"compilerOptions": {
+		"outDir": "dist",
+    "strictNullChecks": false,
+    "noImplicitReturns": false,
+    "useDefineForClassFields": false
+	},
+	"include": [
+		"src"
+	]
 }

@@ -1,1 +1,1 @@
-export * from "./map.memory";
+export * from "./map.memory.js";

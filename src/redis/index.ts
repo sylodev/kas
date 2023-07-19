@@ -1,2 +1,2 @@
-export * from "./map.redis";
-export * from "./set.redis";
+export * from "./map.redis.js";
+export * from "./set.redis.js";

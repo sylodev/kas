@@ -1,15 +1,16 @@
-import MockRedis from "ioredis-mock";
-import { sleep } from "../helpers/sleep";
-import { RedisMapCache } from "./map.redis";
-import { SetOption } from "../types";
+import { redisMock as MockRedis } from "ioredis-mock";
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { sleep } from "../helpers/sleep.js";
+import { SetOption } from "../types.js";
+import { RedisMapCache } from "./map.redis.js";
 
-jest.setMock("ioredis", () => require("ioredis-mock"));
+vi.mock('ioredis', () => import('ioredis-mock'))
 
 let client = new MockRedis();
 // ioredis-mock now persists data between instances
 // so we need to flush the data after each test
-afterEach((done) => {
-  client.flushall().then(() => done());
+afterEach(async () => {
+  await client.flushall()
 });
 
 async function getGeneratorValues<T>(generator: AsyncGenerator<T, any, any>): Promise<T[]> {

@@ -1,6 +1,6 @@
 import { Redis, RedisOptions } from "ioredis";
-import { Cache, Expiry } from "../cache";
-import { RedisLike, resolveRedisInstance } from "../helpers/resolve-redis-instance";
+import { Cache, Expiry } from "../cache.js";
+import { RedisLike, resolveRedisInstance } from "../helpers/resolve-redis-instance.js";
 
 export interface RedisCacheOptions extends RedisOptions {
   /**
@@ -23,7 +23,7 @@ export interface RedisCacheOptions extends RedisOptions {
 
 export abstract class RedisCache extends Cache {
   protected readonly redis: Redis;
-  protected readonly namespace: string;
+  protected override readonly namespace: string;
   protected readonly options?: RedisCacheOptions;
 
   constructor(host: RedisLike, namespace: string, options?: RedisCacheOptions) {

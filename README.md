@@ -28,7 +28,7 @@ cache.get("fortnite"); // "epic"
 Redis caches can be instantiated like any Redis instance.
 
 ```ts
-import Redis from "ioredis";
+import { Redis } from "ioredis";
 import { connectionOptions } from "./constants";
 import { RedisMapCache } from "@sylo-digital/kas";
 

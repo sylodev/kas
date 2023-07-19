@@ -1,6 +1,6 @@
 import { RedisOptions, Redis } from "ioredis";
 
-const REDIS_CLASS_NAMES = new Set(["Redis", "RedisClient", "RedisCluster", "RedisSentinel", "RedisMock"]);
+const REDIS_CLASS_NAMES = (["Redis", "RedisClient", "RedisCluster", "RedisSentinel", "RedisMock"]);
 
 export type RedisLike = string | RedisOptions | Redis;
 
@@ -24,7 +24,7 @@ export function resolveRedisInstance(host: RedisLike, options?: RedisOptions): R
   // this is a flaky test as some transpilers will change the class name, or they could have an unrelated class called "Redis",
   // this will cover "RedisMock" support, some circular dependency issues and other edge cases, basically "Redis" instances that
   // arent *technically* instances of Redis but are still usable redis instances.
-  if (REDIS_CLASS_NAMES.has(host.constructor.name)) {
+  if (REDIS_CLASS_NAMES.some(name => host.constructor.name.includes(name))) {
     return host as Redis;
   }
 

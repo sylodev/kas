@@ -1,4 +1,4 @@
-import { AsyncReturnValues } from "../types";
+import { AsyncReturnValues } from "../types.js";
 
 export interface SetCache<Type> {
   add(value: Type): boolean;

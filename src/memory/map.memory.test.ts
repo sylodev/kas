@@ -1,5 +1,6 @@
-import { sleep } from "../helpers/sleep";
-import { MemoryMapCache } from "./map.memory";
+import { describe, expect, it } from 'vitest';
+import { sleep } from "../helpers/sleep.js";
+import { MemoryMapCache } from "./map.memory.js";
 
 describe("MemoryMapCache", () => {
   it("Should cache data for 2 seconds", async () => {

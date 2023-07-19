@@ -1,11 +1,13 @@
 import { Redis } from "ioredis";
-import MockRedis from "ioredis-mock";
-import { RedisSetCache } from "./set.redis";
+import { redisMock as MockRedis } from "ioredis-mock";
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { RedisSetCache } from "./set.redis.js";
 
-jest.setMock("ioredis", () => require("ioredis-mock"));
+vi.mock('ioredis', () => import('ioredis-mock'))
 
 let client: Redis;
 beforeEach(() => {
+  console.log({MockRedis})
   client = new MockRedis();
 });
 
