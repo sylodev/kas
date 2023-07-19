@@ -1,16 +1,21 @@
-import { redisMock as MockRedis } from "ioredis-mock";
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { Redis } from "ioredis";
+import { GenericContainer, StartedTestContainer } from "testcontainers";
+import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import { sleep } from "../helpers/sleep.js";
 import { SetOption } from "../types.js";
 import { RedisMapCache } from "./map.redis.js";
+import ms from "ms";
 
-vi.mock('ioredis', () => import('ioredis-mock'))
+let container: StartedTestContainer;
+let redisClient: Redis;
 
-let client = new MockRedis();
-// ioredis-mock now persists data between instances
-// so we need to flush the data after each test
+beforeAll(async () => {
+  container = await new GenericContainer("redis").withExposedPorts(6379).start();
+  redisClient = new Redis(container.getMappedPort(6379), container.getHost());
+}, ms("1m"));
+
 afterEach(async () => {
-  await client.flushall()
+  await redisClient.flushall();
 });
 
 async function getGeneratorValues<T>(generator: AsyncGenerator<T, any, any>): Promise<T[]> {
@@ -24,7 +29,7 @@ async function getGeneratorValues<T>(generator: AsyncGenerator<T, any, any>): Pr
 
 describe("RedisMapCache", () => {
   it("Should cache data for 2 seconds", async () => {
-    const cache = new RedisMapCache<string>(client, "fortnite", { defaultExpiry: 50 });
+    const cache = new RedisMapCache<string>(redisClient, "fortnite", { defaultExpiry: 50 });
     expect(await cache.set("test", "epic")).toBeTruthy();
     expect(await cache.get("test")).toBe("epic");
     await sleep(50);
@@ -32,7 +37,7 @@ describe("RedisMapCache", () => {
   });
 
   it("Should delete cached data", async () => {
-    const cache = new RedisMapCache<string>(client, "fortnite");
+    const cache = new RedisMapCache<string>(redisClient, "fortnite");
     expect(await cache.set("test", "epic")).toBeTruthy();
     expect(await cache.get("test")).toBe("epic");
     expect(await cache.delete("test")).toBeTruthy();
@@ -40,7 +45,7 @@ describe("RedisMapCache", () => {
   });
 
   it("Should clear all cached data", async () => {
-    const cache = new RedisMapCache<string>(client, "fortnite", { trackKeys: true });
+    const cache = new RedisMapCache<string>(redisClient, "fortnite", { trackKeys: true });
     expect(await cache.set("test", "epic")).toBeTruthy();
     expect(await cache.get("test")).toBe("epic");
     expect(await cache.clear()).toBeUndefined();
@@ -48,7 +53,7 @@ describe("RedisMapCache", () => {
   });
 
   it("Should check if cached data exists", async () => {
-    const cache = new RedisMapCache<string>(client, "fortnite");
+    const cache = new RedisMapCache<string>(redisClient, "fortnite");
     expect(await cache.set("test", "epic")).toBeTruthy();
     expect(await cache.has("test")).toBeTruthy();
     expect(await cache.delete("test")).toBeTruthy();
@@ -56,17 +61,17 @@ describe("RedisMapCache", () => {
   });
 
   it('Should allow the "options" parameter to be a expiry string', async () => {
-    const cache = new RedisMapCache<string>(client, "fortnite", "5s");
+    const cache = new RedisMapCache<string>(redisClient, "fortnite", "5s");
     expect((cache as any).defaultExpiry).toBe(5000);
   });
 
   it('should return a list of keys from the "keys" method', async () => {
-    const cache = new RedisMapCache<string>(client, "fortnite", { trackKeys: true });
+    const cache = new RedisMapCache<string>(redisClient, "fortnite", { trackKeys: true });
 
     await cache.set("test1", "epic");
     expect(await cache.keys()).toEqual(["test1"]);
     await cache.set("test2", "epic");
-    expect(await cache.keys()).toEqual(["test1", "test2"]);
+    expect((await cache.keys()).sort()).toEqual(["test1", "test2"]);
 
     // deleting keys should remove them from the result
     await cache.delete("test1");
@@ -78,7 +83,7 @@ describe("RedisMapCache", () => {
   });
 
   it("should support getting multiple keys", async () => {
-    const cache = new RedisMapCache<string>(client, "fortnite", { trackKeys: true });
+    const cache = new RedisMapCache<string>(redisClient, "fortnite", { trackKeys: true });
 
     await cache.set("test1", "epic");
     await cache.set("test2", "epic");
@@ -88,22 +93,28 @@ describe("RedisMapCache", () => {
   });
 
   it("should handle getting all entries in the cache", async () => {
-    const cache = new RedisMapCache<string>(client, "fortnite", { trackKeys: true });
+    const cache = new RedisMapCache<string>(redisClient, "fortnite", { trackKeys: true });
 
     // redis doesnt like mget with no keys. ioredis-mock doesnt catch this.
     expect(await getGeneratorValues(cache.entries())).toEqual([]);
 
     await cache.set("test1", "epic1");
     await cache.set("test2", "epic2");
-    expect(await cache.keys()).toEqual(["test1", "test2"]);
-    expect(await getGeneratorValues(cache.entries())).toEqual([
+    expect((await cache.keys()).sort()).toEqual(["test1", "test2"]);
+    expect(
+      (await getGeneratorValues(cache.entries())).sort((a, b) => {
+        if (a[0] > b[0]) return 1;
+        if (a[0] < b[0]) return -1;
+        return 0;
+      }),
+    ).toEqual([
       ["test1", "epic1"],
       ["test2", "epic2"],
     ]);
 
     // deleting keys should remove them from the result
     await cache.delete("test1");
-    expect(await getGeneratorValues(cache.entries())).toEqual([["test2", "epic2"]]);
+    expect((await getGeneratorValues(cache.entries())).sort()).toEqual([["test2", "epic2"]]);
 
     // clearing everything should mean an empty result
     await cache.clear();
@@ -111,14 +122,14 @@ describe("RedisMapCache", () => {
   });
 
   it("should handle getting all values in the cache", async () => {
-    const cache = new RedisMapCache<string>(client, "fortnite", { trackKeys: true });
+    const cache = new RedisMapCache<string>(redisClient, "fortnite", { trackKeys: true });
 
     // redis doesnt like mget with no keys. ioredis-mock doesnt catch this.
     expect(await cache.values()).toEqual([]);
 
     await cache.set("test1", "epic1");
     await cache.set("test2", "epic2");
-    expect(await cache.values()).toEqual(["epic1", "epic2"]);
+    expect((await cache.values()).sort()).toEqual(["epic1", "epic2"]);
 
     // deleting keys should remove them from the result
     await cache.delete("test1");
@@ -130,7 +141,7 @@ describe("RedisMapCache", () => {
   });
 
   it("should support null values", async () => {
-    const cache = new RedisMapCache<null>(client, "fortnite");
+    const cache = new RedisMapCache<null>(redisClient, "fortnite");
 
     expect(await cache.get("test")).toBeUndefined();
     await cache.set("test", null);
@@ -141,10 +152,10 @@ describe("RedisMapCache", () => {
   });
 
   it("should support an array of set options", async () => {
-    const cache = new RedisMapCache<string>(client, "fortnite");
+    const cache = new RedisMapCache<string>(redisClient, "fortnite");
 
     expect(await cache.set("test", "epic1")).toBeTruthy();
-    expect(await cache.set("test", "epic2", 50, [SetOption.KEEP_TTL, SetOption.ONLY_IF_SET])).toBeTruthy();
+    expect(await cache.set("test", "epic2", undefined, [SetOption.KEEP_TTL, SetOption.ONLY_IF_SET])).toBeTruthy();
     expect(await cache.get("test")).toBe("epic2");
   });
 });

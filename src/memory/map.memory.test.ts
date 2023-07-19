@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from "vitest";
 import { sleep } from "../helpers/sleep.js";
 import { MemoryMapCache } from "./map.memory.js";
 
