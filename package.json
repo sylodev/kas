@@ -1,7 +1,7 @@
 {
   "name": "@sylo-digital/kas",
   "description": "Flexible caching solution - with robust, built-in TypeScript types.",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "repository": "github:sylo-digital/kas.git",
   "private": false,
   "license": "MIT",

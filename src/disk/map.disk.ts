@@ -2,13 +2,14 @@ import { loadPackage } from "../helpers/load-package.js";
 import { type MapCache } from "../interfaces/map-cache.interface.js";
 import type { Database } from "better-sqlite3";
 import { pack, unpack } from "msgpackr";
+import ms from "ms";
 
 export interface DiskMapCacheOptions<Type> {
   tableName?: string;
   serializer?: (value: Type) => Buffer;
   deserializer?: (buffer: Buffer) => Type;
   maxItems?: number;
-  maxAge?: number;
+  maxAge?: number | string;
   disableCountCache?: boolean;
 }
 
@@ -40,10 +41,11 @@ export class DiskMapCache<Type> implements MapCache<Type> {
     this.init();
 
     if (options?.maxAge) {
+      const maxAge = typeof options.maxAge === "string" ? ms(options.maxAge) : options.maxAge;
       setInterval(() => {
-        const after = Date.now() - options.maxAge;
+        const after = Date.now() - maxAge;
         this.database.prepare(`DELETE FROM ${this.tableName} WHERE updated_at < ?`).run(after);
-      }, options.maxAge).unref();
+      }, maxAge).unref();
     }
   }
 
