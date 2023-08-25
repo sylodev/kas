@@ -1,5 +1,5 @@
-import { Expiry } from "../cache.js";
-import { AsyncReturnValues, SetOption } from "../types.js";
+import { type Expiry } from "../cache.js";
+import { type AsyncReturnValues, type SetOption } from "../types.js";
 
 export interface MapCache<Type> {
   get(key: string): Type | undefined;

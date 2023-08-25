@@ -1,5 +1,5 @@
 import { Redis } from "ioredis";
-import { GenericContainer, StartedTestContainer } from "testcontainers";
+import { GenericContainer, type StartedTestContainer } from "testcontainers";
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import { sleep } from "../helpers/sleep.js";
 import { SetOption } from "../types.js";

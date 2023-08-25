@@ -1,4 +1,5 @@
-import { RedisOptions, Redis } from "ioredis";
+import { type RedisOptions, type Redis } from "ioredis";
+import { loadPackage } from "./load-package.js";
 
 const REDIS_CLASS_NAMES = ["Redis", "RedisClient", "RedisCluster", "RedisSentinel", "RedisMock"];
 
@@ -15,9 +16,10 @@ function isObject(input: unknown): input is Record<string, unknown> {
  */
 export function resolveRedisInstance(host: RedisLike, options?: RedisOptions): Redis {
   // "host" parameter being used as a connection uri
+  const ioredis = loadPackage<typeof import("ioredis")>("ioredis", () => require("ioredis"));
   if (typeof host === "string") {
-    if (options) return new Redis(host, options);
-    return new Redis(host);
+    if (options) return new ioredis.Redis(host, options);
+    return new ioredis.Redis(host);
   }
 
   // "host" option appears to be an instanceof "Redis" or a related class
@@ -30,14 +32,14 @@ export function resolveRedisInstance(host: RedisLike, options?: RedisOptions): R
 
   // "host" option is an instance of Redis - this covers for classes that extend Redis
   // or that have been renamed by a transpiler to something other than "Redis"
-  if (host instanceof Redis) {
+  if (host instanceof ioredis.Redis) {
     return host as Redis;
   }
 
   // "host" parameter being used as a RedisOptions object
   // this is very lax but it should be fine™️ for almost everything else.
   if (isObject(host)) {
-    return new Redis(host);
+    return new ioredis.Redis(host);
   }
 
   throw new Error("Could not resolve redis connection instance.");

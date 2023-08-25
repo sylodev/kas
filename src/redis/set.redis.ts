@@ -1,5 +1,5 @@
 import { parseRedisBoolean } from "../helpers/parse-redis-boolean.js";
-import { AsyncSetCache } from "../interfaces/set-cache.interface.js";
+import { type AsyncSetCache } from "../interfaces/set-cache.interface.js";
 import { RedisCache } from "./base.redis.js";
 
 export class RedisSetCache<Type> extends RedisCache implements AsyncSetCache<Type> {

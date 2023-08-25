@@ -1,6 +1,6 @@
-import { Redis, RedisOptions } from "ioredis";
-import { Cache, Expiry } from "../cache.js";
-import { RedisLike, resolveRedisInstance } from "../helpers/resolve-redis-instance.js";
+import type { Redis, RedisOptions } from "ioredis";
+import { Cache, type Expiry } from "../cache.js";
+import { type RedisLike, resolveRedisInstance } from "../helpers/resolve-redis-instance.js";
 
 export interface RedisCacheOptions extends RedisOptions {
   /**

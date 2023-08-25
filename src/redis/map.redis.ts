@@ -1,9 +1,10 @@
-import { Expiry } from "../cache.js";
+/* eslint-disable unicorn/prefer-spread */
+import { type Expiry } from "../cache.js";
 import { parseRedisBoolean } from "../helpers/parse-redis-boolean.js";
-import { RedisLike } from "../helpers/resolve-redis-instance.js";
-import { AsyncMapCache } from "../interfaces/map-cache.interface.js";
-import { SetOption } from "../types.js";
-import { RedisCache, RedisCacheOptions } from "./base.redis.js";
+import { type RedisLike } from "../helpers/resolve-redis-instance.js";
+import { type AsyncMapCache } from "../interfaces/map-cache.interface.js";
+import { type SetOption } from "../types.js";
+import { RedisCache, type RedisCacheOptions } from "./base.redis.js";
 
 export class RedisMapCache<Type> extends RedisCache implements AsyncMapCache<Type> {
   private readonly trackKeys?: boolean;
@@ -141,8 +142,7 @@ export class RedisMapCache<Type> extends RedisCache implements AsyncMapCache<Typ
   public async *entries(): AsyncGenerator<[string, Type]> {
     const keys = await this.keys();
     const values = await this.getMany(keys);
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i];
+    for (const [i, key] of keys.entries()) {
       const value = values[i];
       if (value !== null) {
         yield [key, value];
