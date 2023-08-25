@@ -1,4 +1,4 @@
-import { type RedisOptions, type Redis } from "ioredis";
+import type { RedisOptions, Redis } from "ioredis";
 import { loadPackage } from "./load-package.js";
 
 const REDIS_CLASS_NAMES = ["Redis", "RedisClient", "RedisCluster", "RedisSentinel", "RedisMock"];

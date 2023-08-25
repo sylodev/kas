@@ -24,8 +24,8 @@ export class MemoryMapCache<Type> extends Cache implements MapCache<Type> {
   /**
    * Get a keys value from the cache.
    */
-  public get(key: string) {
-    return this.store.get(key);
+  public get<T extends Type>(key: string): T {
+    return this.store.get(key) as T;
   }
 
   /**

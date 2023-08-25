@@ -32,7 +32,7 @@ export class RedisMapCache<Type> extends RedisCache implements AsyncMapCache<Typ
   /**
    * Get a keys value from the cache.
    */
-  public async get(key: string): Promise<Type | undefined> {
+  public async get<T extends Type>(key: string): Promise<T | undefined> {
     const prefixedKey = this.getPrefixedKey(key);
     const stringified = await this.redis.get(prefixedKey);
     if (stringified === null) return;

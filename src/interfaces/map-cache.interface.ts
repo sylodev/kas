@@ -2,7 +2,7 @@ import { type Expiry } from "../cache.js";
 import { type AsyncReturnValues, type SetOption } from "../types.js";
 
 export interface MapCache<Type> {
-  get(key: string): Type | undefined;
+  get<T extends Type>(key: string): T | undefined;
   set(key: string, data: Type, ttl?: Expiry, mode?: SetOption[]): boolean;
   has(key: string): boolean;
   delete(key: string): boolean;
