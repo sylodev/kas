@@ -1,7 +1,7 @@
 {
   "name": "@sylo-digital/kas",
   "description": "Flexible caching solution - with robust, built-in TypeScript types.",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "repository": "github:sylo-digital/kas.git",
   "private": false,
   "license": "MIT",
@@ -16,6 +16,7 @@
     "lint": "eslint --cache --ext .ts .",
     "build": "tsup",
     "prepack ": "npm run build",
+    "prepublishOnly": "npm run build",
     "format": "prettier --write src"
   },
   "keywords": [
